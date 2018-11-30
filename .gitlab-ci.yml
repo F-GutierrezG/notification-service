@@ -22,7 +22,7 @@ Notifications Service:
     - export MAIN_REPO="https://${GITLAB_USER}:${GITLAB_PASSWORD}@gitlab.com/gusisoft/OneLike/notifications-service.git"
     - export NOTIFICATIONS_REPO="${MAIN_REPO}#${CI_COMMIT_REF_NAME}"
   script:
-    - docker build $NOTIFICATIONS_REPO -t $NOTIFICATIONS:$COMMIT -f Dockerfile-dev
+    - docker build $NOTIFICATIONS_REPO -t $NOTIFICATIONS:$COMMIT -f Dockerfile-stage
     - docker tag $NOTIFICATIONS:$COMMIT $REGISTRY_REPO/$NOTIFICATIONS:$TAG
     - docker push $REGISTRY_REPO/$NOTIFICATIONS:$TAG
 

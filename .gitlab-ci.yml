@@ -6,7 +6,7 @@ variables:
   REGISTRY_REPO: registry.gitlab.com/gusisoft/onelike/notifications-service
   NOTIFICATIONS: notifications
 
-stage:
+stages:
   - registry
   - cleanup
   - deploy

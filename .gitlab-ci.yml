@@ -20,11 +20,11 @@ Notifications Service:
     - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
     - docker login -u gitlab-ci-token -p $DOCKER_TOKEN registry.gitlab.com
     - export MAIN_REPO="https://${GITLAB_USER}:${GITLAB_PASSWORD}@gitlab.com/gusisoft/OneLike/notifications-service.git"
-    - export USERS_REPO="${MAIN_REPO}#${CI_COMMIT_REF_NAME}"
+    - export NOTIFICATIONS_REPO="${MAIN_REPO}#${CI_COMMIT_REF_NAME}"
   script:
-    - docker build $USERS_REPO -t $USERS:$COMMIT -f Dockerfile-dev
-    - docker tag $USERS:$COMMIT $REGISTRY_REPO/$USERS:$TAG
-    - docker push $REGISTRY_REPO/$USERS:$TAG
+    - docker build $NOTIFICATIONS_REPO -t $NOTIFICATIONS:$COMMIT -f Dockerfile-dev
+    - docker tag $NOTIFICATIONS:$COMMIT $REGISTRY_REPO/$NOTIFICATIONS:$TAG
+    - docker push $REGISTRY_REPO/$NOTIFICATIONS:$TAG
 
 Cleaning:
   stage: cleanup

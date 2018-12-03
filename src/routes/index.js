@@ -6,4 +6,6 @@ module.exports = (app, io) => {
   app.post('/notifications/send', notificationsController.send);
 
   app.get('/notifications/:hash', notificationsController.get);
+
+  app.delete('/notifications/:hash/:id', notificationsController.remove);
 };

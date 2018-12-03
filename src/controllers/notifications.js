@@ -1,27 +1,42 @@
-const Notification = require('../models').Notification
+const Notification = require('../models').notifications
 
 module.exports = (io) => {
   return {
     send(req, res) {
       const { hash, message } = req.body;
 
-      io.to(hash).emit('timer', message);
-      console.log('Emited to', hash)
-      res.sendStatus(200);
+      Notification
+        .create({ hash, message })
+        .then(notification => {
+          io.to(hash).emit('notification', message);
+          console.log('Emited to', hash)
+          res.sendStatus(200);
+        });      
     },
 
     get(req, res) {
       const hash = req.params.hash;
 
-      console.log('Getting notifications', hash);
+      Notification
+        .findAll({
+          where: { hash }
+        })
+        .then(notifications => {
+          res.send(notifications);
+        });
+    },
 
-      res.send([{
-        "id": 1,
-        "message": "hola"
-      }, {
-        "id": 2,
-        "message": "chao"
-      }]);
+    remove(req, res) {
+      const hash = req.params.hash;
+      const id = req.params.id;
+
+      Notification
+        .destroy({
+          where: { id, hash }
+        })
+        .then(() => {
+          res.sendStatus(204);
+        });
     }
   };
 };

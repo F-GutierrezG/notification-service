@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script>
+    const socket = io('https://stage.onelike.gusisoft.cl', {
+      query: {
+        hash: '1234'
+      }
+    });
+
+    function subscribeToTimer(cb) {
+      socket.on('notification', message => cb(null, message));
+    }
+
+    subscribeToTimer((err, message) => {
+      console.log(message)
+    });
+    </script>
+  </head>
+  <body>
+    <div id="events">
+
+    </div>
+  </body>
+</html>

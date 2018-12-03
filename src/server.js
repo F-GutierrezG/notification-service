@@ -18,7 +18,7 @@ var server = require('http').Server(app)
     console.log("WebSocket listening on port %d", webSocketPort);
   });
 
-var io = require('socket.io')(server);
+var io = require('socket.io')(server, { origins: '*:*' });
 
 io.on('connection', (socket) => {
   const hash = socket.handshake.query.hash;

@@ -6,6 +6,34 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-stage
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@notifications-db:5432/notifications
+    volumes:
+      - '.:/usr/src/app'
+      - '/usr/src/app/node_modules'
     ports:
       - 5100:5000
       - 5101:5001
+    networks:
+      - notifications-service-network
+      - onelike-network
+
+  notifications-db:
+    container_name: notifications-db
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    ports:
+      - 5436:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - notifications-service-network
+
+networks:
+  notifications-service-network:
+    name: notifications-service-network
+  onelike-network:
+    name: onelike-network

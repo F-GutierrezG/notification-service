@@ -20,7 +20,7 @@ services:
       - onelike-network
 
   notifications-db:
-    container_name: users-db
+    container_name: notifications-db
     build:
       context: ./db
       dockerfile: Dockerfile

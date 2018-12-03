@@ -17,4 +17,4 @@ ssh -o StrictHostKeyChecking=no ubuntu@${STAGE_SERVER} "docker run -d -e 'NODE_E
 
 ssh -o StrictHostKeyChecking=no ubuntu@${STAGE_SERVER} 'docker network connect onelike-network --ip 172.18.0.12 notifications'
 
-ssh -o StrictHostKeyChecking=no ubuntu@${STAGE_SERVER} 'docker container exec notifications cd src && ../node_modules/.bin/sequelize db:migrate'
+docker container exec -i notifications bash -c "cd src && ../node_modules/.bin/sequelize db:migrate"

@@ -1,4 +1,4 @@
-const socket = io('http://localhost:5101', {
+const socket = io('https://stage.onelike.gusisoft.cl/notifications-sockets', {
   query: {
     hash: '1234'
   }

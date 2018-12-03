@@ -8,6 +8,7 @@ services:
       dockerfile: Dockerfile-dev
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@notifications-db:5432/notifications
     volumes:
       - '.:/usr/src/app'
       - '/usr/src/app/node_modules'

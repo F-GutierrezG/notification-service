@@ -1,9 +1,14 @@
 var express = require('express');
+var bodyParser = require('body-parser')
 
 var app = express();
 
 var serverPort = 5000;
 var webSocketPort = 5001;
+
+var jsonParser = bodyParser.json()
+
+app.use(jsonParser);
 
 var server = require('http').Server(app)
   .listen(webSocketPort, function() {
@@ -13,18 +18,12 @@ var server = require('http').Server(app)
 var io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
-  console.log('connection', socket);
-  socket.on('subscribeToTimer', (interval) => {
-    console.log('socket is subscribing to timer with interval ', interval);
-    setInterval(() => {
-      socket.emit('timer', new Date());
-    }, interval);
-  });
+  const hash = socket.handshake.query.hash;
+  socket.join(hash);
+  console.log('Connected to', hash);
 });
 
-app.post('/notifications/send', (req, res) => {
-  console.log(req.body);
-});
+require('./routes')(app, io);
 
 app.listen(serverPort, function() {
   console.log("Node server is listening on port %d", serverPort);

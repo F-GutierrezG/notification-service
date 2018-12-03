@@ -12,18 +12,18 @@ var server = require('http').Server(app)
 
 var io = require('socket.io')(server);
 
-io.on('connection', (client) => {
-  console.log('connection', client);
-  client.on('subscribeToTimer', (interval) => {
-    console.log('client is subscribing to timer with interval ', interval);
+io.on('connection', (socket) => {
+  console.log('connection', socket);
+  socket.on('subscribeToTimer', (interval) => {
+    console.log('socket is subscribing to timer with interval ', interval);
     setInterval(() => {
-      client.emit('timer', new Date());
+      socket.emit('timer', new Date());
     }, interval);
   });
 });
 
-app.post('/notifications', (req, res) => {
-
+app.post('/notifications/send', (req, res) => {
+  console.log(req.body);
 });
 
 app.listen(serverPort, function() {

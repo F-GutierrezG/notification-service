@@ -7,6 +7,9 @@
     "express": "4.16.4"
   },
   "scripts": {
-    "start": "node ./src/server"
+    "start": "./node_modules/.bin/nodemon ./src/server"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.7"
   }
 }

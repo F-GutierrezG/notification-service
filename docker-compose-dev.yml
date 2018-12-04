@@ -15,6 +15,7 @@ services:
     ports:
       - 5100:5000 # Server
       - 5101:5001 # Socket
+    restart: always
     networks:
       - notifications-service-network
       - onelike-network
@@ -29,6 +30,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    restart: always
     networks:
       - notifications-service-network
 

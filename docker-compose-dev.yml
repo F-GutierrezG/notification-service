@@ -13,8 +13,8 @@ services:
       - '.:/usr/src/app'
       - '/usr/src/app/node_modules'
     ports:
-      - 5100:5000
-      - 5101:5001
+      - 5100:5000 # Server
+      - 5101:5001 # Socket
     networks:
       - notifications-service-network
       - onelike-network

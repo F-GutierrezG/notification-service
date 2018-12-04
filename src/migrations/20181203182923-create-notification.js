@@ -8,13 +8,17 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      event: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       hash: {
         allowNull: false,
         type: Sequelize.STRING
       },
       message: {
         allowNull: true,
-        type: Sequelize.TEXT
+        type: Sequelize.JSONB
       },
       createdAt: {
         allowNull: false,

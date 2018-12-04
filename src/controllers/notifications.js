@@ -8,10 +8,10 @@ module.exports = (io) => {
       Notification
         .create({ hash, message })
         .then(notification => {
-          io.to(hash).emit('notification', message);
+          io.to(hash).emit('notification', notification);
           console.log('Emited to', hash)
           res.sendStatus(200);
-        });      
+        });
     },
 
     get(req, res) {

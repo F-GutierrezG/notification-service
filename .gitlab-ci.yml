@@ -12,7 +12,7 @@ stages:
   - cleanup
   - deploy
 
-Notifications Service:
+Notifications Service Stage:
   stage: registry
   only:
     - stage
@@ -27,7 +27,7 @@ Notifications Service:
     - docker tag $NOTIFICATIONS:$COMMIT $REGISTRY_REPO/$NOTIFICATIONS:$TAG
     - docker push $REGISTRY_REPO/$NOTIFICATIONS:$TAG
 
-Notifications DB:
+Notifications DB Stage:
   stage: registry
   only:
     - stage
@@ -46,10 +46,11 @@ Cleaning:
   stage: cleanup
   only:
     - stage
+    - master
   script:
     - docker image rm -f $(docker image ls -q)
 
-Stage:
+Deploy Stage:
   stage: deploy
   environment:
     name: stage
@@ -66,3 +67,36 @@ Stage:
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - bash ./stage-deploy.sh
+
+Notifications Service Production:
+  stage: registry
+  only:
+    - master
+  before_script:
+    - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
+    - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
+    - docker login -u gitlab-ci-token -p $DOCKER_TOKEN registry.gitlab.com
+    - export MAIN_REPO="https://${GITLAB_USER}:${GITLAB_PASSWORD}@gitlab.com/gusisoft/OneLike/notifications-service.git"
+    - export NOTIFICATIONS_REPO="${MAIN_REPO}#${CI_COMMIT_REF_NAME}"
+  script:
+    - docker build $NOTIFICATIONS_REPO -t $NOTIFICATIONS:$COMMIT -f Dockerfile
+    - docker tag $NOTIFICATIONS:$COMMIT $REGISTRY_REPO/$NOTIFICATIONS:$TAG
+    - docker push $REGISTRY_REPO/$NOTIFICATIONS:$TAG
+
+Deploy Production:
+  stage: deploy
+  environment:
+    name: production
+    url: http://stage.onelike.gusisoft.cl
+  only:
+    - master
+  before_script:
+    - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
+    - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
+    - rm -rf ~/.ssh
+    - mkdir -p ~/.ssh
+    - echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - bash ./production-deploy.sh

@@ -2,16 +2,19 @@
   "development": {
     "use_env_variable": "DATABASE_URL",
     "migrationStorageTableSchema": "notifications",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "database_poll": "notifications"
   },
   "test": {
     "use_env_variable": "DATABASE_URL",
     "migrationStorageTableSchema": "notifications",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "database_poll": "notifications"
   },
   "production": {
     "use_env_variable": "DATABASE_URL",
     "migrationStorageTableSchema": "notifications",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "database_poll": "notifications"
   }
 }

@@ -31,12 +31,11 @@ module.exports = (io) => {
     },
 
     remove(req, res) {
-      const hash = req.params.hash;
       const id = req.params.id;
 
       Notification
         .destroy({
-          where: { id, hash }
+          where: { id }
         })
         .then(() => {
           res.sendStatus(204);

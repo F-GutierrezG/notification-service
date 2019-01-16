@@ -12,6 +12,6 @@ module.exports = (app, io) => {
 
   app.get('/notifications/:hash', notificationsController.get);
 
-  app.delete('/notifications/:hash/:id', notificationsController.remove);
+  app.delete('/notifications/:id', notificationsController.remove);
 
 };

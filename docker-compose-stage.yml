@@ -32,6 +32,22 @@ services:
     networks:
       - notifications-service-network
 
+  notifications-swagger:
+    container_name: notifications-swagger
+    build:
+      context: ./swagger
+      dockerfile: Dockerfile
+    ports:
+      - 8084:8080
+    volumes:
+      - './swagger/definitions:/usr/share/nginx/html/definitions'
+    environment:
+      - API_URL=definitions/swagger.yml
+    restart: always
+    networks:
+      - notifications-service-network
+      - onelike-network
+
 networks:
   notifications-service-network:
     name: notifications-service-network

@@ -1,78 +1,80 @@
 openapi: "3.0.0"
 info:
-  title: Users Service
+  title: Notifications Service
   version: 1.0.0
-  description: Users Service API documentation
+  description: Notifications Service API documentation
 servers:
-  - url: http://localhost:5001
+  - url: http://localhost:5100
 tags:
-  - name: Authenticate
-    description: Authenticate Operations
-  - name: Users
-    description: User Operations
-  - name: Companies
-    description: Companies Operations
+  - name: Notifications
+    description: Notifications Operations
   - name: Service Health
     description: Service Health Status
 paths:
-  /companies:
+  /notifications/{hash}:
     get:
       tags:
-        - Companies
-      summary: List Companies
-      description: List Companies by user Token
+        - Notifications
+      summary: Get Notifications by hash
+      description: Get Notifications by hash
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: Companies List
+          description: Notifications List
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#components/schemas/Company"
+                  $ref: "#components/schemas/Notification"
         '403':
           description: Forbidden.
           content:
             application/json:
               schema:
                 $ref: "#components/responses/Forbidden"
-  /companies/{id}:
-    get:
+  /notifications/send:
+    post:
       tags:
-        - Companies
-      summary: Get Company
-      description: Get Company by user Token
+        - Notifications
+      summary: Send Notification
+      description: Send a new notification
       security:
         - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: User id
-          required: true
-          schema:
-            type: integer
-            format: int64
+      requestBody:
+        description: Notification Data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#components/requestBodies/CreateNotification"
       responses:
         '200':
-          description: Company Get
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/Company"
+          description: Notification Send
         '403':
           description: Forbidden.
           content:
             application/json:
               schema:
                 $ref: "#components/responses/Forbidden"
-        '404':
-          description: User not found.
+  /notifications/{id}:
+    delete:
+      tags:
+        - Notifications
+      summary: Delete Notification
+      description: Delete a notification
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Notifications Deleted
+        '403':
+          description: Forbidden.
           content:
             application/json:
               schema:
-                $ref: "#components/responses/NotFound"
+                $ref: "#components/responses/Forbidden"
   /users-service/health:
     get:
       tags:
@@ -85,344 +87,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Health"
-  /auth/login:
-    post:
-      tags:
-        - Authenticate
-      summay: Authenticate User
-      description: Login User
-      requestBody:
-        description: Login data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#components/schemas/Login"
-      responses:
-        '200':
-          description: User logued in.
-          content:
-            application/json:
-              schema:
-                type: string
-                description: 'Auth Bearer Token'
-
-        '400':
-          description: Invalid request.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/BadRequest"
-        '404':
-          description: User not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/NotFound"
-  /auth/logout:
-    get:
-      tags:
-        - Authenticate
-      summay: Logout User
-      description: Logout User
-      security:
-        - bearerAuth: []
-      responses:
-        '204':
-          description: User logued out.
-        '403':
-          description: Forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/Forbidden"
-
-  /auth/status:
-    get:
-      tags:
-        - Authenticate
-      summay: Authenticate Status
-      description: Get Authenticate Status
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Authenticate Status.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: string
-                    description: 'Authenticate Status'
-        '403':
-          description: Forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/Forbidden"
-  /users:
-    get:
-      tags:
-        - Users
-      summary: List Users
-      description: List Users
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: List Users.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#components/schemas/User"
-        '403':
-          description: Forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/Forbidden"
-    post:
-      tags:
-        - Users
-      summary: Create User
-      description: Creates a new User
-      security:
-        - bearerAuth: []
-      requestBody:
-        description: User data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserCreate'
-      responses:
-        '201':
-          description: User successfully created.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-        '400':
-          description: Invalid request.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/BadRequest"
-        '403':
-          description: Forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/Forbidden"
-  /users/{id}:
-    get:
-      tags:
-        - Users
-      summary: Get User
-      description: Get an existing User
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: User id
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: User succesfullt retreived.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-        '404':
-          description: User not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/NotFound"
-        '403':
-          description: Forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/Forbidden"
-    put:
-      tags:
-        - Users
-      summary: Update User
-      description: Update an existing User
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: User id
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        description: User data
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserUpdate'
-      responses:
-        '200':
-          description: User successfully updated.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/schemas/User"
-        '400':
-          description: Invalid request.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/BadRequest"
-        '404':
-          description: User not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/NotFound"
-        '403':
-          description: Forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/Forbidden"
-    delete:
-      tags:
-        - Users
-      summary: Delete User
-      description: Delete an existing User
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: User id
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '204':
-          description: User successfully deleted.
-        '404':
-          description: User not found.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/NotFound"
-        '403':
-          description: Forbidden.
-          content:
-            application/json:
-              schema:
-                $ref: "#components/responses/Forbidden"
 components:
   schemas:
-    Company:
+    Notification:
       properties:
         id:
           type: integer
           format: int64
-          description: Company id
-        name:
+          description: Notification id
+        event:
           type: string
-          description: Company name
-    Login:
-      required:
-        - email
-        - password
-      properties:
-        email:
+          description: Notification event
+        hash:
           type: string
-          description: User email
-        password:
+          description: Hash of the event
+        message:
+          type: object
+          description: Notification body
+        createdAt:
           type: string
-          description: User password
-    UserCreate:
-      allOf:
-        - $ref: "#/components/requestBodies/UserBase"
-        - required:
-          - first_name
-          - last_name
-          - email
-          - password
-          properties:
-            password:
-              type: string
-              description: User password
-    UserUpdate:
-      allOf:
-        - $ref: "#/components/requestBodies/UserBase"
-        - required:
-          - first_name
-          - last_name
-          - email
-    User:
-      allOf:
-        - $ref: "#/components/requestBodies/UserBase"
-        - required:
-          properties:
-            id:
-              type: integer
-              format: int64
-              description: User id
-            first_name:
-              type: string
-              description: User first name
-            last_name:
-              type: string
-              description: User last name
-            email:
-              type: string
-              description: User email
-            active:
-              type: boolean
-              description: User active status
-            created:
-              type: string
-              format: date-time
-              description: Created datetime
-            created_by:
-              type: integer
-              description: User id who creates this
-            updated:
-              type: string
-              format: date-time
-              description: Updated datetime
-            updated_by:
-              type: integer
-              description: User id who updates this
+          format: datetime
+          description: Notification creation datetime
+        updatedAt:
+          type: string
+          format: datetime
+          description: Notification update datetime
     Health:
       properties:
         message:
           type: string
           description: Health status
   requestBodies:
-    UserBase:
+    CreateNotification:
+      required:
+        - event
+        - hashes
+        - message
       properties:
-        first_name:
+        event:
           type: string
-          description: User first name
-        last_name:
-          type: string
-          description: User last name
-        email:
-          type: string
-          description: User email
+          description: Notification event
+        hashes:
+          type: array
+          items:
+            type: string
+          description: Hashes to notify
+        message:
+          type: object
+          description: Notification body
   responses:
     BadRequest:
       properties:

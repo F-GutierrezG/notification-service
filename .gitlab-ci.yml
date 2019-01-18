@@ -6,6 +6,7 @@ variables:
   REGISTRY_REPO: registry.gitlab.com/gusisoft/onelike/notifications-service
   NOTIFICATIONS: notifications
   NOTIFICATIONS_DB: notifications-db
+  SWAGGER: notifications-swagger
 
 stages:
   - registry

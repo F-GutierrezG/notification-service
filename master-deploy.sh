@@ -16,5 +16,6 @@ ssh -o StrictHostKeyChecking=no ubuntu@${PRODUCTION_SERVER} "docker run -d --res
 ssh -o StrictHostKeyChecking=no ubuntu@${PRODUCTION_SERVER} "docker run -d --restart always -e 'NODE_ENV=production' -e 'DATABASE_URL=postgres://$DATABASE_PROD_USER:$DATABASE_PROD_PASSWORD@$DATABASE_PROD_URL:$DATABASE_PROD_PORT/$DATABASE_PROD_NAME' --name notifications --network notifications-service-network --ip 172.23.0.2 $REGISTRY_REPO/$NOTIFICATIONS:$TAG"
 
 ssh -o StrictHostKeyChecking=no ubuntu@${PRODUCTION_SERVER} 'docker network connect onelike-network --ip 172.18.0.12 notifications'
+ssh -o StrictHostKeyChecking=no ubuntu@${PRODUCTION_SERVER} 'docker network connect onelike-network --ip 172.18.0.13 notifications-swagger'
 
 ssh -o StrictHostKeyChecking=no ubuntu@${PRODUCTION_SERVER} 'docker container exec -i notifications bash -c "cd src && ../node_modules/.bin/sequelize db:migrate"'

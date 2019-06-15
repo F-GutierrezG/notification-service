@@ -1,7 +1,8 @@
-image: alpine
+image: docker
+services:
+  - docker:dind
 
 variables:
-  COMMIT: ${CI_COMMIT_SHA}
   TAG: ${CI_COMMIT_REF_NAME}
   REGISTRY_REPO: registry.gitlab.com/gusisoft/onelike/notifications-service
   NOTIFICATIONS: notifications
@@ -18,38 +19,36 @@ Notifications Service:
     - stage
     - master
   before_script:
-    - sudo git clean -ffdx
+    - apk add --no-cache git
     - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
     - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
     - docker login -u gitlab-ci-token -p $DOCKER_TOKEN registry.gitlab.com
     - export MAIN_REPO="https://${GITLAB_USER}:${GITLAB_PASSWORD}@gitlab.com/gusisoft/OneLike/notifications-service.git"
     - export NOTIFICATIONS_REPO="${MAIN_REPO}#${CI_COMMIT_REF_NAME}"
   script:
-    - docker build $NOTIFICATIONS_REPO -t $NOTIFICATIONS:$COMMIT -f Dockerfile-${CI_COMMIT_REF_NAME}
-    - docker tag $NOTIFICATIONS:$COMMIT $REGISTRY_REPO/$NOTIFICATIONS:$TAG
+    - docker build $NOTIFICATIONS_REPO -t $NOTIFICATIONS:$CI_COMMIT_SHA -f Dockerfile-${CI_COMMIT_REF_NAME}
+    - docker tag $NOTIFICATIONS:$CI_COMMIT_SHA $REGISTRY_REPO/$NOTIFICATIONS:$TAG
     - docker push $REGISTRY_REPO/$NOTIFICATIONS:$TAG
   after_script:
     - docker image rm -f $(docker images registry.gitlab.com/gusisoft/onelike/notifications-service/notifications -q)
-    - sudo git clean -ffdx
 
 Notifications DB:
   stage: registry
   only:
     - stage
   before_script:
-    - sudo git clean -ffdx
+    - apk add --no-cache git
     - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
     - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
     - docker login -u gitlab-ci-token -p $DOCKER_TOKEN registry.gitlab.com
     - export MAIN_REPO="https://${GITLAB_USER}:${GITLAB_PASSWORD}@gitlab.com/gusisoft/OneLike/notifications-service.git"
     - export NOTIFICATIONS_DB_REPO="${MAIN_REPO}#${CI_COMMIT_REF_NAME}:db"
   script:
-    - docker build $NOTIFICATIONS_DB_REPO -t $NOTIFICATIONS_DB:$COMMIT -f Dockerfile
-    - docker tag $NOTIFICATIONS_DB:$COMMIT $REGISTRY_REPO/$NOTIFICATIONS_DB:$TAG
+    - docker build $NOTIFICATIONS_DB_REPO -t $NOTIFICATIONS_DB:$CI_COMMIT_SHA -f Dockerfile
+    - docker tag $NOTIFICATIONS_DB:$CI_COMMIT_SHA $REGISTRY_REPO/$NOTIFICATIONS_DB:$TAG
     - docker push $REGISTRY_REPO/$NOTIFICATIONS_DB:$TAG
   after_script:
     - docker image rm -f $(docker images registry.gitlab.com/gusisoft/onelike/notifications-service/notifications-db -q)
-    - sudo git clean -ffdx
 
 Notifications Swagger:
   stage: registry
@@ -57,28 +56,25 @@ Notifications Swagger:
     - stage
     - master
   before_script:
-    - sudo git clean -ffdx
+    - apk add --no-cache git
     - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
     - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
     - docker login -u gitlab-ci-token -p $DOCKER_TOKEN registry.gitlab.com
     - export MAIN_REPO="https://${GITLAB_USER}:${GITLAB_PASSWORD}@gitlab.com/gusisoft/OneLike/notifications-service.git"
     - export SWAGGER_REPO="${MAIN_REPO}#${CI_COMMIT_REF_NAME}:swagger"
   script:
-    - docker build $SWAGGER_REPO -t $SWAGGER:$COMMIT -f Dockerfile
-    - docker tag $SWAGGER:$COMMIT $REGISTRY_REPO/$SWAGGER:$TAG
+    - docker build $SWAGGER_REPO -t $SWAGGER:$CI_COMMIT_SHA -f Dockerfile
+    - docker tag $SWAGGER:$CI_COMMIT_SHA $REGISTRY_REPO/$SWAGGER:$TAG
     - docker push $REGISTRY_REPO/$SWAGGER:$TAG
   after_script:
     - docker image rm -f $(docker images registry.gitlab.com/gusisoft/onelike/notifications-service/notifications-swagger -q)
-    - sudo git clean -ffdx
 
 Deploy Stage:
   stage: deploy
-  environment:
-    name: stage
-    url: http://stage.onelike.gusisoft.cl
   only:
     - stage
   before_script:
+    - apk add --no-cache openssh-client git
     - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
     - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
     - rm -rf ~/.ssh
@@ -87,16 +83,14 @@ Deploy Stage:
     - chmod 600 ~/.ssh/id_rsa
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - bash ./${CI_COMMIT_REF_NAME}-deploy.sh
+    - sh ./${CI_COMMIT_REF_NAME}-deploy.sh
 
 Deploy Production:
   stage: deploy
-  environment:
-    name: production
-    url: http://stage.onelike.gusisoft.cl
   only:
     - master
   before_script:
+    - apk add --no-cache openssh-client git
     - export COMMIT_TIME=$(git show -s --format=%ct $CI_COMMIT_SHA)
     - export TAG=${CI_COMMIT_REF_NAME}_$COMMIT_TIME
     - rm -rf ~/.ssh
@@ -105,4 +99,4 @@ Deploy Production:
     - chmod 600 ~/.ssh/id_rsa
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
-    - bash ./${CI_COMMIT_REF_NAME}-deploy.sh
+    - sh ./${CI_COMMIT_REF_NAME}-deploy.sh
